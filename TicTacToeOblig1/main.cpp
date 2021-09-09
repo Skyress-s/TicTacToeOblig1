@@ -1,12 +1,13 @@
 #include <iostream>
 
-
+void Menu();
 void MainGameLoop();
 void Draw();
 void SwitchActivePlayer();
 
 bool WinCheck();
 
+void ClearCin();
 
 char board[9] = { '1','2','3','4','5','6','7','8','9' };
 
@@ -14,18 +15,64 @@ char activePlayer = 'X';
 
 int main() {
 	
-	Draw();
+	Menu();
 	MainGameLoop();
-
-
-	
 
 	return 0;
 }
 
+void Menu() {
+	while (true)
+	{
+
+		//introduction
+		std::cout << "Hello and Welcome to TicTacToe!!" << std::endl;
+		std::cout << "________________________________" << std::endl << std::endl;
+		std::cout << "Please select from the menu below : " << std::endl;
+
+		//scenes
+		std::cout << "1. Play duos" << std::endl;
+		std::cout << "2. Play agenst AI" << std::endl;
+		std::cout << "q. Quit" << std::endl << std::endl;
+		std::cout << "Input : ";
+		std::string answer{};
+		std::cin >> answer;
+		ClearCin();
+		char charAns{};
+
+		if (answer.size() > 1)
+		{
+			charAns = {};
+		}
+		else
+		{
+			charAns = answer[0];
+		}
+
+		switch (charAns)
+		{
+		case'1':
+			MainGameLoop();
+			break;
+		case '2':
+			break;
+		case 'q':
+			exit(3);
+			break;
+		default:
+			break;
+		}
+
+		system("cls");
+	}
+}
 
 
 void MainGameLoop() {
+	system("cls");
+	Draw();
+	int totalTurns{};
+
 	while (true)
 	{
 
@@ -39,6 +86,7 @@ void MainGameLoop() {
 
 			WinCheck();
 			SwitchActivePlayer();
+			totalTurns++;
 		}
 		else
 		{
@@ -48,9 +96,13 @@ void MainGameLoop() {
 			system("cls");
 			Draw();
 		}
-		
+		//if 9 turns is taken, and nobody with this round, its always a draw
+		if (totalTurns == 9)
+		{
+			std::cout << "It's a draw!" << std::endl;
+			exit(3);
+		}
 
-		
 	}
 }
 
@@ -150,9 +202,47 @@ bool WinCheck() {
 
 
 	//Checks the \ and /
-	/*for (size_t i = 0; i < length; i++)
-	{
 
+	//start with /
+	char c = board[0];
+	int win{};
+	for (size_t i = 1; i < 3; i++)
+	{
+		char b = board[i * 4];
+		if (b == c)
+		{
+			win++;
+		}
 	}
-	return  true;*/
+	if (win == 2)
+	{
+		std::cout << activePlayer << " has win! WINWINWIWNWINW" << std::endl;
+		exit(3);
+	}
+
+
+
+	// checks "\"
+	c = board[2];
+	win = 0;
+	for (int i = 1; i < 3; i++)
+	{
+		char b = board[2 + i * 2];
+		if (b == c)
+		{
+			win++;
+		}
+	}
+	if (win == 2)
+	{
+		std::cout << activePlayer << " has win! WINWINWIWNWINW" << std::endl;
+		exit(3);
+	}
+
+	return  true;
+}
+
+void ClearCin() {
+	std::cin.clear();    //Clears eventual errors from buffer
+	std::cin.ignore(32767, '\n');    //clears the buffer if anything is there
 }
