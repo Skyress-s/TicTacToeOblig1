@@ -32,7 +32,7 @@ void Menu() {
 
 		//scenes
 		std::cout << "1. Play duos" << std::endl;
-		std::cout << "2. Play agenst AI" << std::endl;
+		std::cout << "2. Play agenst computer" << std::endl;
 		std::cout << "q. Quit" << std::endl << std::endl;
 		std::cout << "Input : ";
 		std::string answer{};
