@@ -2,11 +2,14 @@
 
 void Menu();
 void MainGameLoop();
-void Draw();
+void DrawBoard();
 void SwitchActivePlayer();
+void ResetGameState();
+
 
 void ResetBoard();
 void DisplayWinner();
+bool WinCheck();
 bool WinCheck();
 
 void ClearCin();
@@ -17,11 +20,11 @@ char board[9] = {};
 char activePlayer = 'X';
 
 int main() {
+
 	ResetBoard();
 
-	return 0;
+	
 	Menu();
-	MainGameLoop();
 
 	return 0;
 }
@@ -75,37 +78,56 @@ void Menu() {
 
 void MainGameLoop() {
 	system("cls");
-	Draw();
+	activePlayer = 'X';
+	ResetBoard();
 	int totalTurns{};
 
 	while (true)
 	{
+		system("cls");
+		DrawBoard();
 
 		int input{};
-		std::cin >> input;
-		system("cls");
-		if (board[input - 1] != 'X' && board[input - 1] != 'O')
+		bool acceptedAns = false;
+		// checking that the answer is inside the array/board length
+		while (!acceptedAns) 
 		{
-			board[input - 1] = activePlayer;
-			Draw();	
-
 			
-			if (WinCheck())
-			{
-				break;
+			std::cin >> input;
+			ClearCin();
+
+			acceptedAns = true;
+			if (input >= 1 && input <= 9){
+			}
+			else{
+				DrawBoard();
+				std::cout << "Invalid answer, please input again: " << std::endl;
+				acceptedAns = false;
 			}
 
-			SwitchActivePlayer();
-			totalTurns++;
+			if (board[input - 1] == 'X' || board[input - 1] == 'O') {
+				std::cout << "Space alleready taken, please try again" << std::endl;
+				acceptedAns = false;
+			}
+
 		}
-		else
-		{
+		//succsesfull turn logic
+		board[input - 1] = activePlayer;	
+		totalTurns++;
+
+		if (WinCheck()){
 			system("cls");
-			std::cout << "Space alleready taken, please try again" << std::endl;
+			DrawBoard();
+			std::cout << "Player " << activePlayer << " has won!" << std::endl;
 			system("pause");
-			system("cls");
-			Draw();
+			break;
 		}
+
+		SwitchActivePlayer();
+		
+		
+			
+		
 		//if 9 turns is taken, and nobody with this round, its always a draw
 		if (totalTurns == 9)
 		{
@@ -117,7 +139,7 @@ void MainGameLoop() {
 }
 
 
-void Draw() {
+void DrawBoard() {
 	for (int i = 0; i < 3; i++)
 	{
 		std::cout << ' ';
@@ -136,7 +158,8 @@ void Draw() {
 		}
 
 	}
-	std::cout << std::endl;
+
+	std::cout << std::endl << activePlayer << "'s turn : ";
 }
 
 void SwitchActivePlayer() {
@@ -169,99 +192,36 @@ void ResetBoard() {
 	}
 }
 
-
 bool WinCheck() {
-	//checks the --- / rows
-	for (int i = 0; i < 3; i++)
-	{
-		int win = 0;
-		char c = board[i * 3];
-		for (int j = 1; j < 3; j++)
-		{
-			char pos = board[i * 3 + j];
-			if (c == pos)
-			{
-				win++;;
-			}
-			else
-			{
-				break;
-			}			
-		}
-		if (win == 2)
-		{
-			DisplayWinner();
-			return true;
-		}
+	// cheking the rows
 
-	}
-
-	//checks the ||| or collums
-	for (int i = 0; i < 3; i++)
-	{
-		int win{ 0 };
-		char c = board[i];
-		for (int j = 0; j < 2; j++)
-		{
-			char pos = board[i +3 + j*3];
-
-			if (pos == c)
-			{
-				win++;
-			}
-			else
-			{
-				break;
-			}
-		}
-		if (win == 2)
-		{
-			DisplayWinner();
+	for (int i = 0; i < 3; i++){
+		if (board[i * 3 + 0] == board[i * 3 + 1] && board[i * 3 + 1] == board[i * 3 + 2]) {
 			return true;
 		}
 	}
 
-
-	//Checks the \ and /
-
-	//start with /
-	char c = board[0];
-	int win{};
-	for (size_t i = 1; i < 3; i++)
-	{
-		char b = board[i * 4];
-		if (b == c)
-		{
-			win++;
+	//checking the collums
+	for (int i = 0; i < 3; i++){
+		if (board[0 + i] == board[3 + i] && board[3 + i] == board[6 + i]){
+			return true;
 		}
 	}
-	if (win == 2)
-	{
-		DisplayWinner();
+
+	//checking the / diagonal
+	if (board[0] == board[4] && board[4] == board[8]){
+		return true;
+	}
+	//checking \\ 
+	if (board[2] == board[4] && board[4] == board[6]){
 		return true;
 	}
 
-
-
-	// checks "\"
-	c = board[2];
-	win = 0;
-	for (int i = 1; i < 3; i++)
-	{
-		char b = board[2 + i * 2];
-		if (b == c)
-		{
-			win++;
-		}
-	}
-	if (win == 2)
-	{
-		DisplayWinner();
-		return true;
-	}
 
 	return false;
+
 }
+
 
 void ClearCin() {
 	std::cin.clear();    //Clears eventual errors from buffer
