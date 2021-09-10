@@ -5,16 +5,21 @@ void MainGameLoop();
 void Draw();
 void SwitchActivePlayer();
 
+void ResetBoard();
+void DisplayWinner();
 bool WinCheck();
 
 void ClearCin();
 
-char board[9] = { '1','2','3','4','5','6','7','8','9' };
+char boardBlueprint[9] = { '1','2','3','4','5','6','7','8','9' };
+char board[9] = {};
 
 char activePlayer = 'X';
 
 int main() {
-	
+	ResetBoard();
+
+	return 0;
 	Menu();
 	MainGameLoop();
 
@@ -84,7 +89,12 @@ void MainGameLoop() {
 			board[input - 1] = activePlayer;
 			Draw();	
 
-			WinCheck();
+			
+			if (WinCheck())
+			{
+				break;
+			}
+
 			SwitchActivePlayer();
 			totalTurns++;
 		}
@@ -147,6 +157,19 @@ void SwitchActivePlayer() {
 	}
 }
 
+void DisplayWinner() {
+	std::cout << activePlayer << " has win! WINWINWIWNWINW" << std::endl;
+	system("pause");
+}
+
+void ResetBoard() {
+	for (int i = 0; i < sizeof(board)/sizeof(board[0]); i++)
+	{
+		board[i] = boardBlueprint[i];
+	}
+}
+
+
 bool WinCheck() {
 	//checks the --- / rows
 	for (int i = 0; i < 3; i++)
@@ -167,8 +190,8 @@ bool WinCheck() {
 		}
 		if (win == 2)
 		{
-			std::cout << activePlayer<< " has win! WINWINWIWNWINW" << std::endl;
-			exit(3);
+			DisplayWinner();
+			return true;
 		}
 
 	}
@@ -193,10 +216,8 @@ bool WinCheck() {
 		}
 		if (win == 2)
 		{
-			std::cout << activePlayer << " has win! WINWINWIWNWINW" << std::endl;
-			exit(3);
-			
-			
+			DisplayWinner();
+			return true;
 		}
 	}
 
@@ -216,8 +237,8 @@ bool WinCheck() {
 	}
 	if (win == 2)
 	{
-		std::cout << activePlayer << " has win! WINWINWIWNWINW" << std::endl;
-		exit(3);
+		DisplayWinner();
+		return true;
 	}
 
 
@@ -235,11 +256,11 @@ bool WinCheck() {
 	}
 	if (win == 2)
 	{
-		std::cout << activePlayer << " has win! WINWINWIWNWINW" << std::endl;
-		exit(3);
+		DisplayWinner();
+		return true;
 	}
 
-	return  true;
+	return false;
 }
 
 void ClearCin() {
