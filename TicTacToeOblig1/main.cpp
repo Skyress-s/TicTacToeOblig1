@@ -5,17 +5,40 @@ void Menu();
 void MainGameLoop();
 void DrawBoard(std::vector<char> a_board);
 void SwitchActivePlayer();
-void DisplayWinner();
 
 int PlayerInput();
+
 void ResetBoard();
+
+/// <summary>
+/// Checks if the gamestate is a win
+/// </summary>
+/// <returns></returns>
 bool WinCheck();
+
+void DisplayWinner();
 
 void ClearCin();
 
 //AI part
+
+/// <summary>
+/// AI always starts, and always places in the center spot
+/// This AI is based on that the player can either place their 'O' in a corner or a edge, this means if we rotate the board
+/// in increments of 90 degrees, and we rotate the board correct, the player only has two starting positions,
+/// either down left corner or bottom edge
+/// This way we only have to code two paths for the AI to play where one of them i allways winnable (edge) and 
+/// one is drawable (corner)
+/// </summary>
+/// <param name="a_board">the board to rotate</param>
+/// <param name="turn">the total turns taken</param>
+/// <returns></returns>
 int AIInput(std::vector<char> a_board, int turn);
+
+int ConvertInputFromRotation(int rotIntput);
+
 void HowManyRotations();
+
 
 
 
@@ -40,29 +63,30 @@ int main() {
 void Menu() {
 	while (true)
 	{
+		//Clears the space incase someting is left in the console window
+		system("cls");
 
 		//introduction
 		std::cout << "Hello and Welcome to TicTacToe!!" << std::endl;
 		std::cout << "________________________________" << std::endl << std::endl;
 		std::cout << "Please select from the menu below : " << std::endl;
 
-		//scenes
+		//scenes / options
 		std::cout << "1. Play duos" << std::endl;
 		std::cout << "2. Play agenst computer" << std::endl;
 		std::cout << "q. Quit" << std::endl << std::endl;
-
+		
+		//The players input
 		std::cout << "Input : ";
 		std::string answer{};
 		std::cin >> answer;
 		ClearCin();
 		char charAns{};
 
-		if (answer.size() > 1)
-		{
+		if (answer.size() > 1){
 			charAns = {};
 		}
-		else
-		{
+		else{
 			charAns = answer[0];
 		}
 
@@ -83,81 +107,52 @@ void Menu() {
 			break;
 		}
 
-		system("cls");
 	}
 }
 
 
 void MainGameLoop() {
+
 	system("cls");
-	activePlayer = 'X';
+	activePlayer = 'X';	// Defualts to X as first player
 	ResetBoard();
-	int totalTurns{};
+
+	int totalTurns{};	//Counter for how many turns the has taken
 
 	
-	while (true)
+	while (true) // gameplay loop, runs until break is called
 	{
 		system("cls");
 		DrawBoard(board);
 		std::cout << activePlayer << "'s turn : ";
 
 		int input{};
-		if (AIisOn && activePlayer == 'X')
-		{
-			// AI logic
-			std::vector<char> rotatedBoard = board;
+
+		if (AIisOn && activePlayer == 'X'){
+			//	AI logic
 			
-			
+			//when we are at the third turn (total turns starts at 0) check how many roations of the board are needed
 			if (totalTurns == 2){
 				HowManyRotations();
 			}
 
+			std::vector<char> rotatedBoard = board;
 			for (int i = 0; i < howManyTurns; i++) 
 			{
 				rotatedBoard = RotateBoard90Deg(rotatedBoard);
 			}
-				
-			/*DrawBoard(rotatedBoard);
-			system("pause");*/
 			
-			
-
 			input = AIInput(rotatedBoard, totalTurns);
-
-			//convert back to the proper rotation
-			std::vector<char> coverntBoard = boardBlueprint;
-			for (int i = 0; i < howManyTurns; i++)
-			{
-				coverntBoard = RotateBoard90Deg(coverntBoard);
-			}
-
-			coverntBoard[input - 1] = 'X';
-
-			for (int i = 0; i < 4 - howManyTurns; i++)
-			{
-				coverntBoard = RotateBoard90Deg(coverntBoard);
-			}
-
-			for (int i = 0; i < coverntBoard.size(); i++)
-			{
-				if (coverntBoard[i] == 'X')
-				{
-					input = (i + 1);
-				}
-			}
-
-
+			input = ConvertInputFromRotation(input);
 		}
 		else
 		{
 			input = PlayerInput();
-
 		}
 
 
 		//succsesfull input logic
 		board[input - 1] = activePlayer;	
-		
 
 		if (WinCheck()){
 			system("cls");
@@ -166,10 +161,6 @@ void MainGameLoop() {
 			system("pause");
 			break;
 		}
-
-		SwitchActivePlayer();
-		
-		
 			
 		totalTurns++;
 		//if 9 turns is taken, and nobody with this round, its always a draw
@@ -181,6 +172,7 @@ void MainGameLoop() {
 			exit(3);
 		}
 
+		SwitchActivePlayer();
 	}
 }
 
@@ -333,8 +325,6 @@ void ClearCin() {
 }
 
 
-
-
 int AIInput(std::vector<char> a_board, int turn) {
 
 	if (turn == 0){
@@ -415,6 +405,37 @@ int AIInput(std::vector<char> a_board, int turn) {
 			break;
 		}
 	}
+}
+
+int ConvertInputFromRotation(int rotIntput) {
+	
+
+	//creates a new defualt board and rotates it so it matches the AI's veiw
+	std::vector<char> coverntBoard = boardBlueprint;
+	for (int i = 0; i < howManyTurns; i++)
+	{
+		coverntBoard = RotateBoard90Deg(coverntBoard);
+	}
+
+	// inputs the X where the AI wanted to place it on the rotated board
+	coverntBoard[rotIntput - 1] = 'X';
+
+	//rotates the board back to the original rotation (the rotation the player sees)
+	for (int i = 0; i < 4 - howManyTurns; i++)
+	{
+		coverntBoard = RotateBoard90Deg(coverntBoard);
+	}
+
+	//finds the poition in the vector/board where the x is
+	for (int i = 0; i < coverntBoard.size(); i++)
+	{
+		if (coverntBoard[i] == 'X')
+		{
+			rotIntput = (i + 1); // input is equal the i (the position) pluss 1 (so it matches the numpad)
+		}
+	}
+
+	return rotIntput;
 }
 
 
