@@ -1,29 +1,37 @@
 #include <iostream>
+#include <vector>
 
 void Menu();
 void MainGameLoop();
-void DrawBoard();
+void DrawBoard(std::vector<char> a_board);
 void SwitchActivePlayer();
-void ResetGameState();
-
-
-void ResetBoard();
 void DisplayWinner();
-bool WinCheck();
+
+int PlayerInput();
+void ResetBoard();
 bool WinCheck();
 
 void ClearCin();
 
-char boardBlueprint[9] = { '1','2','3','4','5','6','7','8','9' };
-char board[9] = {};
+//AI part
+int AIInput(std::vector<char> a_board, int turn);
+void HowManyRotations();
 
+
+
+
+std::vector<char> RotateBoard90Deg(std::vector<char> a_board);
+
+std::vector<char> boardBlueprint = { '1','2','3','4','5','6','7','8','9' };
+std::vector<char> board = { '1','2','3','4','5','6','7','8','9' };
+bool AIisOn{ false };
 char activePlayer = 'X';
+
+bool winCase = false;
+int howManyTurns{};
 
 int main() {
 
-	ResetBoard();
-
-	
 	Menu();
 
 	return 0;
@@ -42,6 +50,7 @@ void Menu() {
 		std::cout << "1. Play duos" << std::endl;
 		std::cout << "2. Play agenst computer" << std::endl;
 		std::cout << "q. Quit" << std::endl << std::endl;
+
 		std::cout << "Input : ";
 		std::string answer{};
 		std::cin >> answer;
@@ -60,9 +69,12 @@ void Menu() {
 		switch (charAns)
 		{
 		case'1':
+			AIisOn = false;
 			MainGameLoop();
 			break;
 		case '2':
+			AIisOn = true;
+			MainGameLoop();
 			break;
 		case 'q':
 			exit(3);
@@ -82,42 +94,74 @@ void MainGameLoop() {
 	ResetBoard();
 	int totalTurns{};
 
+	
 	while (true)
 	{
 		system("cls");
-		DrawBoard();
+		DrawBoard(board);
+		std::cout << activePlayer << "'s turn : ";
 
 		int input{};
-		bool acceptedAns = false;
-		// checking that the answer is inside the array/board length
-		while (!acceptedAns) 
+		if (AIisOn && activePlayer == 'X')
 		{
+			// AI logic
+			std::vector<char> rotatedBoard = board;
 			
-			std::cin >> input;
-			ClearCin();
-
-			acceptedAns = true;
-			if (input >= 1 && input <= 9){
-			}
-			else{
-				DrawBoard();
-				std::cout << "Invalid answer, please input again: " << std::endl;
-				acceptedAns = false;
+			
+			if (totalTurns == 2){
+				HowManyRotations();
 			}
 
-			if (board[input - 1] == 'X' || board[input - 1] == 'O') {
-				std::cout << "Space alleready taken, please try again" << std::endl;
-				acceptedAns = false;
+			for (int i = 0; i < howManyTurns; i++) 
+			{
+				rotatedBoard = RotateBoard90Deg(rotatedBoard);
 			}
+				
+			/*DrawBoard(rotatedBoard);
+			system("pause");*/
+			
+			
+
+			input = AIInput(rotatedBoard, totalTurns);
+
+			//convert back to the proper rotation
+			std::vector<char> coverntBoard = boardBlueprint;
+			for (int i = 0; i < howManyTurns; i++)
+			{
+				coverntBoard = RotateBoard90Deg(coverntBoard);
+			}
+
+			coverntBoard[input - 1] = 'X';
+
+			for (int i = 0; i < 4 - howManyTurns; i++)
+			{
+				coverntBoard = RotateBoard90Deg(coverntBoard);
+			}
+
+			for (int i = 0; i < coverntBoard.size(); i++)
+			{
+				if (coverntBoard[i] == 'X')
+				{
+					input = (i + 1);
+				}
+			}
+
 
 		}
-		//succsesfull turn logic
+		else
+		{
+			input = PlayerInput();
+
+		}
+
+
+		//succsesfull input logic
 		board[input - 1] = activePlayer;	
-		totalTurns++;
+		
 
 		if (WinCheck()){
 			system("cls");
-			DrawBoard();
+			DrawBoard(board);
 			std::cout << "Player " << activePlayer << " has won!" << std::endl;
 			system("pause");
 			break;
@@ -127,10 +171,12 @@ void MainGameLoop() {
 		
 		
 			
-		
+		totalTurns++;
 		//if 9 turns is taken, and nobody with this round, its always a draw
 		if (totalTurns == 9)
 		{
+			system("cls");
+			DrawBoard(board);
 			std::cout << "It's a draw!" << std::endl;
 			exit(3);
 		}
@@ -139,13 +185,35 @@ void MainGameLoop() {
 }
 
 
-void DrawBoard() {
+std::vector<char> RotateBoard90Deg(std::vector<char> a_board) {
+	
+	//Rotates the board 90 degres
+	//edges
+
+	int edge_buffer = a_board[1];
+	a_board[1] = a_board[5];
+	a_board[5] = a_board[7];
+	a_board[7] = a_board[3];
+	a_board[3] = edge_buffer;
+
+	//corners
+	int cornerbuffer = a_board[0];
+	a_board[0] = a_board[2];
+	a_board[2] = a_board[8];
+	a_board[8] = a_board[6];
+	a_board[6] = cornerbuffer;
+
+	return a_board;
+}
+
+void DrawBoard(std::vector<char> a_board) {
+	//Draws the board
 	for (int i = 0; i < 3; i++)
 	{
 		std::cout << ' ';
 		for (int j = 0; j < 3; j++)
 		{
-			std::cout << board[(2 - i) * 3 + j];
+			std::cout << a_board[(2 - i) * 3 + j];
 			if (j < 2)
 			{
 				std::cout << " | ";
@@ -159,7 +227,7 @@ void DrawBoard() {
 
 	}
 
-	std::cout << std::endl << activePlayer << "'s turn : ";
+	std::cout << std::endl << std::endl;
 }
 
 void SwitchActivePlayer() {
@@ -185,8 +253,44 @@ void DisplayWinner() {
 	system("pause");
 }
 
+int PlayerInput() {
+	// checking that the answer is inside the array/board length
+	int input{};
+	bool acceptedAns = false;
+	while (!acceptedAns)
+	{
+		std::cin >> input;
+		ClearCin();
+
+		acceptedAns = true;
+		if (input >= 1 && input <= 9) {
+		}
+		else {
+			system("cls");
+			DrawBoard(board);
+			std::cout << "Invalid answer, please input again: " << std::endl;
+			std::cout << activePlayer << "'s turn : ";
+
+			acceptedAns = false;
+		}
+
+		if (board[input - 1] == 'X' || board[input - 1] == 'O') {
+			system("cls");
+			DrawBoard(board);
+			std::cout << "Space alleready taken, please try again" << std::endl;
+			std::cout << activePlayer << "'s turn : ";
+			acceptedAns = false;
+		}
+
+	}
+
+	return input;
+
+}
+
+
 void ResetBoard() {
-	for (int i = 0; i < sizeof(board)/sizeof(board[0]); i++)
+	for (int i = 0; i < board.size(); i++)
 	{
 		board[i] = boardBlueprint[i];
 	}
@@ -226,4 +330,130 @@ bool WinCheck() {
 void ClearCin() {
 	std::cin.clear();    //Clears eventual errors from buffer
 	std::cin.ignore(32767, '\n');    //clears the buffer if anything is there
+}
+
+
+
+
+int AIInput(std::vector<char> a_board, int turn) {
+
+	if (turn == 0){
+		return 5;
+	}
+
+	
+
+
+	//corner route
+	if (winCase)
+	{
+
+		switch (turn)
+		{
+		case 2:
+			return 9;
+			break;
+
+		case 4: 
+			if (a_board[0] == 'O'){
+				return 3;
+			}
+			else{
+				return 1;
+			}
+			break;
+
+		case 6:
+			if (a_board[5] == 'O'){
+				return 7;
+			}
+			else{
+				return 6;
+			}
+
+		default:
+			break;
+		}
+	}
+	else
+	{
+		switch (turn)
+		{
+		case 2:
+			return 6;
+			break;
+
+		case 4:
+			if (a_board[3] == 'O') {
+				return 7;
+			}
+			else {
+				return 4;
+			}
+			break;
+
+		case 6:
+			if (a_board[2] == 'O') {
+				return 2;
+			}
+			else {
+				return 3;
+			}
+			break;
+
+		case 8:
+			if (a_board[7] == 'O') {
+				return 9;
+			}
+			else
+			{
+				return 8;
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+
+void HowManyRotations(){
+	//Checking corner
+	if (board[6] == 'O') {
+		howManyTurns = 3;
+		winCase = false;
+	}
+	else if (board[8] == 'O') {
+		howManyTurns = 2;
+		winCase = false;
+	}
+	else if (board[2] == 'O') {
+		howManyTurns = 1;
+		winCase = false;
+	}
+	else if (board[0] == 'O') {
+		howManyTurns = 0;
+		winCase = false;
+	}
+
+	//checking edges
+	if (board[3] == 'O') {
+		howManyTurns = 3;
+		winCase = true;
+	}
+	else if (board[7] == 'O') {
+		howManyTurns = 2;
+		winCase = true;
+	}
+	else if (board[5] == 'O')
+	{
+		howManyTurns = 1;
+		winCase = true;
+	}
+	else if (board[1] == 'O')
+	{
+		howManyTurns = 0;
+		winCase = true;
+	}
 }
