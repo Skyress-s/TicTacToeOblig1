@@ -141,12 +141,10 @@ void MainGameLoop() {
 			{
 				rotatedBoard = RotateBoard90Deg(rotatedBoard);
 			}
-			
 			input = AIInput(rotatedBoard, totalTurns);
 			input = ConvertInputFromRotation(input);
 		}
-		else
-		{
+		else{
 			input = PlayerInput();
 		}
 
@@ -292,14 +290,16 @@ void ResetBoard() {
 bool WinCheck() {
 	// cheking the rows
 
-	for (int i = 0; i < 3; i++){
+	for (int i = 0; i < 3; i++)
+	{
 		if (board[i * 3 + 0] == board[i * 3 + 1] && board[i * 3 + 1] == board[i * 3 + 2]) {
 			return true;
 		}
 	}
 
 	//checking the collums
-	for (int i = 0; i < 3; i++){
+	for (int i = 0; i < 3; i++)
+	{
 		if (board[0 + i] == board[3 + i] && board[3 + i] == board[6 + i]){
 			return true;
 		}
