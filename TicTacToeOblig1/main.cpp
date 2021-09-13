@@ -169,7 +169,8 @@ void MainGameLoop() {
 			system("cls");
 			DrawBoard(board);
 			std::cout << "It's a draw!" << std::endl;
-			exit(3);
+			system("pause");
+			break;
 		}
 
 		SwitchActivePlayer();
