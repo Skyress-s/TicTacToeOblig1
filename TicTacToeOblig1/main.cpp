@@ -4,8 +4,11 @@
 
 
 void Menu();
-void MainGameLoop();
+void MainGameLoop(bool);
 void DrawBoard(std::vector<char> a_board); 
+/// <summary>
+/// func for switching the active player
+/// </summary>
 void SwitchActivePlayer();
 int PlayerInput();
 /// <summary>
@@ -55,7 +58,7 @@ std::vector<char> RotateBoard90Deg(std::vector<char> a_board);
 
 std::vector<char> boardBlueprint = { '1','2','3','4','5','6','7','8','9' };
 std::vector<char> board = { '1','2','3','4','5','6','7','8','9' };
-bool AIisOn{ false };
+
 char activePlayer = 'X';
 
 bool winCase = false;
@@ -68,6 +71,8 @@ int main() {
 }
 
 void Menu() {
+	bool AIisOn{ false };
+
 	while (true)
 	{
 		//Clears the space incase someting is left in the console window
@@ -101,11 +106,11 @@ void Menu() {
 		{
 		case'1':
 			AIisOn = false;
-			MainGameLoop();
+			MainGameLoop(AIisOn);
 			break;
 		case '2':
 			AIisOn = true;
-			MainGameLoop();
+			MainGameLoop(AIisOn);
 			break;
 		case 'q':
 			exit(3);
@@ -118,7 +123,7 @@ void Menu() {
 }
 
 
-void MainGameLoop() {
+void MainGameLoop(bool a_AIisOn) {
 
 	system("cls");
 	activePlayer = 'X';	// Defualts to X as first player
@@ -135,7 +140,7 @@ void MainGameLoop() {
 
 		int input{};
 
-		if (AIisOn && activePlayer == 'X') {
+		if (a_AIisOn && activePlayer == 'X') {
 			//	AI input and logic
 			
 			//when we are at the third turn (total turns starts at 0) check how many roations of the board are needed
