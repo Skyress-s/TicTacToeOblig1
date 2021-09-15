@@ -5,32 +5,22 @@
 
 void Menu();
 void MainGameLoop();
-
 void DrawBoard(std::vector<char> a_board); 
-
 void SwitchActivePlayer();
-
 int PlayerInput();
-
 /// <summary>
 /// hei dette er en forklaring
 /// </summary>
 void ResetBoard();
-
-
-
 /// <summary>
 /// Checks if the gamestate is a win
 /// </summary>
 /// <returns></returns>
 bool WinCheck();
-
 void DisplayWinner();
-
 void ClearCin();
 
 //AI part
-
 /// <summary>
 /// AI always starts, and always places in the center spot
 /// This AI is based on that the player can either place their 'O' in a corner or a edge, this means if we rotate the board
@@ -43,8 +33,6 @@ void ClearCin();
 /// <param name="turn">the total turns taken</param>
 /// <returns></returns>
 int AIInput(std::vector<char> a_board, int turn);
-
-
 /// <summary>
 /// Converts the input the AI gives from the rotated board and converts it to the unrotated board
 /// </summary>
@@ -52,14 +40,12 @@ int AIInput(std::vector<char> a_board, int turn);
 /// <param name="rotate amount"> How many rotations of the board</param>
 /// <returns></returns>
 int ConvertInputFromRotation(int , int);
-
 /// <summary>
 /// function to determine how many rotation the board needs to be rotated for the AI to understand it.
 /// It return how many 90 degree turns is needed
 /// </summary>
 /// <returns></returns>
 int HowManyRotations();
-
 /// <summary>
 /// Rotates a copy of the board gives to it clockwise once
 /// </summary>
@@ -210,7 +196,6 @@ void MainGameLoop() {
 	}
 }
 
-
 std::vector<char> RotateBoard90Deg(std::vector<char> a_board) {
 	
 	//Rotates the board 90 degres
@@ -314,7 +299,6 @@ int PlayerInput() {
 
 }
 
-
 void ResetBoard() {
 	for (int i = 0; i < board.size(); i++)
 	{
@@ -354,12 +338,10 @@ bool WinCheck() {
 
 }
 
-
 void ClearCin() {
 	std::cin.clear();    //Clears eventual errors from buffer
 	std::cin.ignore(32767, '\n');    //clears the buffer if anything is there
 }
-
 
 int AIInput(std::vector<char> a_board, int turn) {
 
@@ -470,7 +452,6 @@ int ConvertInputFromRotation(int rotIntput, int a_rotateAmount) {
 
 	return rotIntput;
 }
-
 
 int HowManyRotations(){
 	//Checking corner
