@@ -6,20 +6,10 @@
 /// Menu to select duos, vs AI or quit
 /// </summary>
 void Menu();
-
-/// <summary>
-/// The main looping gameloop
-/// </summary>
-void MainGameLoop();
-
-/// <summary>
-/// Draws the board given to it
-/// </summary>
-/// <param name="a_board"></param>
+void MainGameLoop(bool);
 void DrawBoard(std::vector<char> a_board); 
-
 /// <summary>
-/// Switches the global activePlayer, 'X' => 'Y' and vice versa
+/// func for switching the active player
 /// </summary>
 void SwitchActivePlayer();
 
@@ -28,25 +18,20 @@ void SwitchActivePlayer();
 /// </summary>
 /// <returns></returns>
 int PlayerInput();
-
 /// <summary>
 /// Resets the global scope board to standard values, 1, 2, 3, 4, ...
 /// </summary>
 void ResetBoard();
-
 /// <summary>
 /// Checks if the gamestate is a win,
 /// advice for making the check better was given from Anders from the class
 /// </summary>
 /// <returns></returns>
 bool WinCheck();
-
 void DisplayWinner();
-
 void ClearCin();
 
 //AI part
-
 /// <summary>
 /// AI always starts, and always places in the center spot
 /// This AI is based on that the player can either place their 'O' in a corner or a edge, this means if we rotate the board
@@ -59,8 +44,6 @@ void ClearCin();
 /// <param name="turn">the total turns taken</param>
 /// <returns></returns>
 int AIInput(std::vector<char> a_board, int turn);
-
-
 /// <summary>
 /// Converts the input the AI gives from the rotated board and converts it to the unrotated board
 /// </summary>
@@ -68,14 +51,12 @@ int AIInput(std::vector<char> a_board, int turn);
 /// <param name="rotate amount"> How many rotations of the board</param>
 /// <returns></returns>
 int ConvertInputFromRotation(int , int);
-
 /// <summary>
 /// function to determine how many rotation the board needs to be rotated for the AI to understand it.
 /// It return how many 90 degree turns is needed
 /// </summary>
 /// <returns></returns>
 int HowManyRotations();
-
 /// <summary>
 /// Rotates a copy of the board gives to it clockwise once
 /// </summary>
@@ -85,7 +66,7 @@ std::vector<char> RotateBoard90Deg(std::vector<char> a_board);
 
 std::vector<char> boardBlueprint = { '1','2','3','4','5','6','7','8','9' };
 std::vector<char> board = { '1','2','3','4','5','6','7','8','9' };
-bool AIisOn{ false };
+
 char activePlayer = 'X';
 
 bool winCase = false;
@@ -98,6 +79,8 @@ int main() {
 }
 
 void Menu() {
+	bool AIisOn{ false };
+
 	while (true)
 	{
 		//Clears the space incase someting is left in the console window
@@ -131,11 +114,11 @@ void Menu() {
 		{
 		case'1':
 			AIisOn = false;
-			MainGameLoop();
+			MainGameLoop(AIisOn);
 			break;
 		case '2':
 			AIisOn = true;
-			MainGameLoop();
+			MainGameLoop(AIisOn);
 			break;
 		case 'q':
 			exit(3);
@@ -148,7 +131,7 @@ void Menu() {
 }
 
 
-void MainGameLoop() {
+void MainGameLoop(bool a_AIisOn) {
 
 	system("cls");
 	activePlayer = 'X';	// Defualts to X as first player
@@ -165,7 +148,7 @@ void MainGameLoop() {
 
 		int input{};
 
-		if (AIisOn && activePlayer == 'X') {
+		if (a_AIisOn && activePlayer == 'X') {
 			//	AI input and logic
 			
 			//when we are at the third turn (total turns starts at 0) check how many roations of the board are needed
@@ -225,7 +208,6 @@ void MainGameLoop() {
 		SwitchActivePlayer();
 	}
 }
-
 
 std::vector<char> RotateBoard90Deg(std::vector<char> a_board) {
 	
@@ -369,12 +351,10 @@ bool WinCheck() {
 
 }
 
-
 void ClearCin() {
 	std::cin.clear();    //Clears eventual errors from buffer
 	std::cin.ignore(32767, '\n');    //clears the buffer if anything is there
 }
-
 
 int AIInput(std::vector<char> a_board, int turn) {
 
@@ -485,7 +465,6 @@ int ConvertInputFromRotation(int rotIntput, int a_rotateAmount) {
 
 	return rotIntput;
 }
-
 
 int HowManyRotations(){
 	//Checking corner
