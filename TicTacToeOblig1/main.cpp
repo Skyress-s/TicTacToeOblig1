@@ -18,17 +18,20 @@ void SwitchActivePlayer();
 /// </summary>
 /// <returns></returns>
 int PlayerInput();
+
 /// <summary>
 /// Resets the global scope board to standard values, 1, 2, 3, 4, ...
 /// </summary>
 void ResetBoard();
+
 /// <summary>
 /// Checks if the gamestate is a win,
 /// advice for making the check better was given from Anders from the class
 /// </summary>
 /// <returns></returns>
 bool WinCheck();
-void DisplayWinner();
+
+
 void ClearCin();
 
 //AI part
@@ -270,11 +273,6 @@ void SwitchActivePlayer() {
 		system("pause");
 		system("cls");
 	}
-}
-
-void DisplayWinner() {
-	std::cout << activePlayer << " has win! WINWINWIWNWINW" << std::endl;
-	system("pause");
 }
 
 int PlayerInput() {
