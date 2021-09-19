@@ -2,25 +2,41 @@
 #include <vector>
 
 
-
+/// <summary>
+/// Menu to select duos, vs AI or quit
+/// </summary>
 void Menu();
+
+/// <summary>
+/// The main looping gameloop
+/// </summary>
 void MainGameLoop();
 
+/// <summary>
+/// Draws the board given to it
+/// </summary>
+/// <param name="a_board"></param>
 void DrawBoard(std::vector<char> a_board); 
 
+/// <summary>
+/// Switches the global activePlayer, 'X' => 'Y' and vice versa
+/// </summary>
 void SwitchActivePlayer();
 
+/// <summary>
+/// Gets the player input and checks if its an accepted answer, of not asks again
+/// </summary>
+/// <returns></returns>
 int PlayerInput();
 
 /// <summary>
-/// hei dette er en forklaring
+/// Resets the global scope board to standard values, 1, 2, 3, 4, ...
 /// </summary>
 void ResetBoard();
 
-
-
 /// <summary>
-/// Checks if the gamestate is a win
+/// Checks if the gamestate is a win,
+/// advice for making the check better was given from Anders from the class
 /// </summary>
 /// <returns></returns>
 bool WinCheck();
@@ -313,7 +329,6 @@ int PlayerInput() {
 	return input;
 
 }
-
 
 void ResetBoard() {
 	for (int i = 0; i < board.size(); i++)
