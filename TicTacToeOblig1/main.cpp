@@ -87,6 +87,9 @@ std::vector<char> boardBlueprint = { '1','2','3','4','5','6','7','8','9' };
 
 // main func
 int main() {
+	
+
+
 	Menu();
 	return 0;
 }
@@ -100,9 +103,10 @@ void Menu() {
 		system("cls");
 
 		//introduction
-		std::cout << "Hello and Welcome to TicTacToe!!" << std::endl;
-		std::cout << "________________________________" << std::endl << std::endl;
-		std::cout << "Please select from the menu below : " << std::endl;
+		std::cout << std::endl;
+		std::cout << "   Hello and Welcome to TicTacToe!!   " << std::endl;
+		std::cout << "______________________________________" << std::endl << std::endl;
+		std::cout << "  Please select from the menu below : " << std::endl;
 
 		//scenes / options
 		std::cout << "1. Play duos" << std::endl;
@@ -299,6 +303,13 @@ int PlayerInput(std::vector<char> a_board, char a_activePlayer) {
 
 		acceptedAns = true;
 		if (input >= 1 && input <= 9) {
+			if (a_board[input - 1] == 'X' || a_board[input - 1] == 'O') {
+				system("cls");
+				DrawBoard(a_board);
+				std::cout << "Space alleready taken, please try again" << std::endl;
+				std::cout << a_activePlayer << "'s turn : ";
+				acceptedAns = false;
+			}
 		}
 		else {
 			system("cls");
@@ -309,13 +320,7 @@ int PlayerInput(std::vector<char> a_board, char a_activePlayer) {
 			acceptedAns = false;
 		}
 
-		if (a_board[input - 1] == 'X' || a_board[input - 1] == 'O') {
-			system("cls");
-			DrawBoard(a_board);
-			std::cout << "Space alleready taken, please try again" << std::endl;
-			std::cout << a_activePlayer << "'s turn : ";
-			acceptedAns = false;
-		}
+		
 
 	}
 
