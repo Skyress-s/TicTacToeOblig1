@@ -22,13 +22,13 @@ void DrawBoard(std::vector<char> a_board);
 /// <summary>
 /// func for switching the active player
 /// </summary>
-void SwitchActivePlayer(char & a_activePlayer);
+void SwitchActivePlayer(char&);
 
 /// <summary>
 /// Gets the player input and checks if its an accepted answer, of not asks again
 /// </summary>
 /// <returns></returns>
-int PlayerInput();
+int PlayerInput(std::vector<char>, char);
 
 /// <summary>
 /// Resets the global scope board to standard values, 1, 2, 3, 4, ...
@@ -74,7 +74,7 @@ int ConvertInputFromRotation(int , int);
 /// It return how many 90 degree turns is needed
 /// </summary>
 /// <returns></returns>
-int HowManyRotations();
+int HowManyRotations(std::vector<char>, bool&);
 
 /// <summary>
 /// Rotates a copy of the board gives to it clockwise once
@@ -85,7 +85,7 @@ std::vector<char> RotateBoard90Deg(std::vector<char>);
 
 std::vector<char> boardBlueprint = { '1','2','3','4','5','6','7','8','9' };
 
-
+// main func
 int main() {
 	Menu();
 	return 0;
@@ -170,10 +170,9 @@ void MainGameLoop(bool a_AIisOn) {
 			
 			//when we are at the third turn (total turns starts at 0) check how many roations of the board are needed
 			//for the ai to understand the board correctly
-			
 
 			if (totalTurns == 2){
-				rotateAmount = HowManyRotations();
+				rotateAmount = HowManyRotations(board, winCase);
 			}
 
 			//defines ans rotates the board
@@ -193,7 +192,7 @@ void MainGameLoop(bool a_AIisOn) {
 		}
 		else {
 			//player input
-			input = PlayerInput();
+			input = PlayerInput(board, activePlayer);
 		}
 
 
@@ -271,7 +270,7 @@ void DrawBoard(std::vector<char> a_board) {
 	std::cout << std::endl << std::endl;
 }
 
-void SwitchActivePlayer(char & a_activePlayer) {
+void SwitchActivePlayer(char& a_activePlayer) {
 	if (a_activePlayer == 'X')
 	{
 		a_activePlayer = 'O';
@@ -289,7 +288,7 @@ void SwitchActivePlayer(char & a_activePlayer) {
 	}
 }
 
-int PlayerInput() {
+int PlayerInput(std::vector<char> a_board, char a_activePlayer) {
 	// checking that the answer is inside the array/board length
 	int input{};
 	bool acceptedAns = false;
@@ -303,18 +302,18 @@ int PlayerInput() {
 		}
 		else {
 			system("cls");
-			DrawBoard(board);
+			DrawBoard(a_board);
 			std::cout << "Invalid answer, please input again: " << std::endl;
-			std::cout << activePlayer << "'s turn : ";
+			std::cout << a_activePlayer << "'s turn : ";
 
 			acceptedAns = false;
 		}
 
-		if (board[input - 1] == 'X' || board[input - 1] == 'O') {
+		if (a_board[input - 1] == 'X' || a_board[input - 1] == 'O') {
 			system("cls");
-			DrawBoard(board);
+			DrawBoard(a_board);
 			std::cout << "Space alleready taken, please try again" << std::endl;
-			std::cout << activePlayer << "'s turn : ";
+			std::cout << a_activePlayer << "'s turn : ";
 			acceptedAns = false;
 		}
 
