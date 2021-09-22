@@ -22,7 +22,7 @@ void DrawBoard(std::vector<char> a_board);
 /// <summary>
 /// func for switching the active player
 /// </summary>
-void SwitchActivePlayer();
+void SwitchActivePlayer(char & a_activePlayer);
 
 /// <summary>
 /// Gets the player input and checks if its an accepted answer, of not asks again
@@ -33,14 +33,14 @@ int PlayerInput();
 /// <summary>
 /// Resets the global scope board to standard values, 1, 2, 3, 4, ...
 /// </summary>
-void ResetBoard();
+void ResetBoard(std::vector<char>&);
 
 /// <summary>
 /// Checks if the gamestate is a win,
 /// advice for making the check better was given from Anders from the class
 /// </summary>
 /// <returns></returns>
-bool WinCheck();
+bool WinCheck(std::vector<char>);
 
 /// <summary>
 /// Clears the cin buffer for input and errors
@@ -59,7 +59,7 @@ void ClearCin();
 /// <param name="a_board">the board to rotate</param>
 /// <param name="turn">the total turns taken</param>
 /// <returns></returns>
-int AIInput(std::vector<char> a_board, int turn);
+int AIInput(std::vector<char>, int, bool);
 
 /// <summary>
 /// Converts the input the AI gives from the rotated board and converts it to the unrotated board
@@ -81,14 +81,10 @@ int HowManyRotations();
 /// </summary>
 /// <param name="a_board"> The board to rotate and return </param>
 /// <returns>Returns the rotated board</returns>
-std::vector<char> RotateBoard90Deg(std::vector<char> a_board);
+std::vector<char> RotateBoard90Deg(std::vector<char>);
 
 std::vector<char> boardBlueprint = { '1','2','3','4','5','6','7','8','9' };
-std::vector<char> board = { '1','2','3','4','5','6','7','8','9' };
 
-char activePlayer = 'X';
-
-bool winCase = false;
 
 int main() {
 	Menu();
@@ -148,9 +144,15 @@ void Menu() {
 
 void MainGameLoop(bool a_AIisOn) {
 
+	std::vector<char> board(9);
+
+	char activePlayer = 'X';
+
+	bool winCase = false;
+
 	system("cls");
 	activePlayer = 'X';	// Defualts to X as first player
-	ResetBoard();
+	ResetBoard(board);
 
 	int totalTurns{};	//Counter for how many turns the has taken
 	int rotateAmount{};
@@ -183,7 +185,7 @@ void MainGameLoop(bool a_AIisOn) {
 
 
 			//gives the rotated board to the AI
-			input = AIInput(rotatedBoard, totalTurns);
+			input = AIInput(rotatedBoard, totalTurns, winCase);
 
 			//Converts to input from to rotated board to the unrotated board
 			input = ConvertInputFromRotation(input, rotateAmount);
@@ -199,7 +201,7 @@ void MainGameLoop(bool a_AIisOn) {
 		board[input - 1] = activePlayer;	
 		
 		//win check and what happens if a win is detected
-		if (WinCheck()){
+		if (WinCheck(board)){
 			system("cls");
 			DrawBoard(board);
 			std::cout << "Player " << activePlayer << " has won!" << std::endl;
@@ -220,7 +222,7 @@ void MainGameLoop(bool a_AIisOn) {
 		}
 
 		//Switches the active player at the end of turn
-		SwitchActivePlayer();
+		SwitchActivePlayer(activePlayer);
 	}
 }
 
@@ -269,19 +271,19 @@ void DrawBoard(std::vector<char> a_board) {
 	std::cout << std::endl << std::endl;
 }
 
-void SwitchActivePlayer() {
-	if (activePlayer == 'X')
+void SwitchActivePlayer(char & a_activePlayer) {
+	if (a_activePlayer == 'X')
 	{
-		activePlayer = 'O';
+		a_activePlayer = 'O';
 	}
-	else if (activePlayer == 'O')
+	else if (a_activePlayer == 'O')
 	{
-		activePlayer = 'X';
+		a_activePlayer = 'X';
 	}
 	else
 	{
 		std::cout << "INVALID ACTIVE PLAYER, defualting to 'X' as active player" << std::endl;
-		activePlayer = 'X';
+		a_activePlayer = 'X';
 		system("pause");
 		system("cls");
 	}
@@ -322,19 +324,19 @@ int PlayerInput() {
 
 }
 
-void ResetBoard() {
-	for (int i = 0; i < board.size(); i++)
+void ResetBoard(std::vector<char>& a_board) {
+	for (int i = 0; i < a_board.size(); i++)
 	{
-		board[i] = boardBlueprint[i];
+		a_board[i] = boardBlueprint[i];
 	}
 }
 
-bool WinCheck() {
+bool WinCheck(std::vector<char> a_board) {
 	// cheking the rows
 
 	for (int i = 0; i < 3; i++)
 	{
-		if (board[i * 3 + 0] == board[i * 3 + 1] && board[i * 3 + 1] == board[i * 3 + 2]) {
+		if (a_board[i * 3 + 0] == a_board[i * 3 + 1] && a_board[i * 3 + 1] == a_board[i * 3 + 2]) {
 			return true;
 		}
 	}
@@ -342,17 +344,17 @@ bool WinCheck() {
 	//checking the collums
 	for (int i = 0; i < 3; i++)
 	{
-		if (board[0 + i] == board[3 + i] && board[3 + i] == board[6 + i]){
+		if (a_board[0 + i] == a_board[3 + i] && a_board[3 + i] == a_board[6 + i]){
 			return true;
 		}
 	}
 
 	//checking the / diagonal
-	if (board[0] == board[4] && board[4] == board[8]){
+	if (a_board[0] == a_board[4] && a_board[4] == a_board[8]){
 		return true;
 	}
 	//checking \\ 
-	if (board[2] == board[4] && board[4] == board[6]){
+	if (a_board[2] == a_board[4] && a_board[4] == a_board[6]){
 		return true;
 	}
 
@@ -366,7 +368,7 @@ void ClearCin() {
 	std::cin.ignore(32767, '\n');    //clears the buffer if anything is there
 }
 
-int AIInput(std::vector<char> a_board, int turn) {
+int AIInput(std::vector<char> a_board, int turn, bool winCase) {
 
 	if (turn == 0){
 		return 5;
@@ -476,42 +478,42 @@ int ConvertInputFromRotation(int rotIntput, int a_rotateAmount) {
 	return rotIntput;
 }
 
-int HowManyRotations(){
+int HowManyRotations(std::vector<char> a_board, bool& a_winCase){
 	//Checking corner
 	int rotAmount{};
-	if (board[6] == 'O') {
+	if (a_board[6] == 'O') {
 		rotAmount = 3;
-		winCase = false;
+		a_winCase = false;
 	}
-	else if (board[8] == 'O') {
+	else if (a_board[8] == 'O') {
 		rotAmount = 2;
-		winCase = false;
+		a_winCase = false;
 	}
-	else if (board[2] == 'O') {
+	else if (a_board[2] == 'O') {
 		rotAmount = 1;
-		winCase = false;
+		a_winCase = false;
 	}
-	else if (board[0] == 'O') {
+	else if (a_board[0] == 'O') {
 		rotAmount = 0;
-		winCase = false;
+		a_winCase = false;
 	}
 
 	//checking edges
-	if (board[3] == 'O') {
+	if (a_board[3] == 'O') {
 		rotAmount = 3;
-		winCase = true;
+		a_winCase = true;
 	}
-	else if (board[7] == 'O') {
+	else if (a_board[7] == 'O') {
 		rotAmount = 2;
-		winCase = true;
+		a_winCase = true;
 	}
-	else if (board[5] == 'O'){
+	else if (a_board[5] == 'O'){
 		rotAmount = 1;
-		winCase = true;
+		a_winCase = true;
 	}
-	else if (board[1] == 'O'){
+	else if (a_board[1] == 'O'){
 		rotAmount = 0;
-		winCase = true;
+		a_winCase = true;
 	}
 	return rotAmount;
 }
