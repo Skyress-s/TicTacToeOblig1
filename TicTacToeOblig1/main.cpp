@@ -83,13 +83,11 @@ int HowManyRotations(std::vector<char>, bool&);
 /// <returns>Returns the rotated board</returns>
 std::vector<char> RotateBoard90Deg(std::vector<char>);
 
-std::vector<char> boardBlueprint = { '1','2','3','4','5','6','7','8','9' };
+//a blueprint for an empty board, usefor for quickly resetting a gameboard
+std::vector<char> boardBlueprint = { '1','2','3','4','5','6','7','8','9' }; 
 
 // main func
 int main() {
-	
-
-
 	Menu();
 	return 0;
 }
@@ -120,10 +118,10 @@ void Menu() {
 		ClearCin();
 		char charInput{};
 
-		if (input.size() > 1){
+		if (input.size() > 1) {
 			charInput = {};
 		}
-		else{
+		else {
 			charInput = input[0];
 		}
 
@@ -319,13 +317,8 @@ int PlayerInput(std::vector<char> a_board, char a_activePlayer) {
 
 			acceptedAns = false;
 		}
-
-		
-
 	}
-
 	return input;
-
 }
 
 void ResetBoard(std::vector<char>& a_board) {
@@ -373,7 +366,6 @@ void ClearCin() {
 }
 
 int AIInput(std::vector<char> a_board, int turn, bool winCase) {
-
 	if (turn == 0){
 		return 5;
 	}
