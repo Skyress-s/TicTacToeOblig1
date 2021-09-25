@@ -48,6 +48,7 @@ bool WinCheck(std::vector<char>);
 void ClearCin();
 
 //AI part
+
 /// <summary>
 /// AI always starts, and always places in the center spot
 /// This AI is based on that the player can either place their 'O' in a corner or a edge, this means if we rotate the board
@@ -84,7 +85,7 @@ int HowManyRotations(std::vector<char>, bool&);
 std::vector<char> RotateBoard90Deg(std::vector<char>);
 
 //a blueprint for an empty board, usefor for quickly resetting a gameboard
-std::vector<char> boardBlueprint = { '1','2','3','4','5','6','7','8','9' }; 
+const std::vector<char> boardBlueprint = { '1','2','3','4','5','6','7','8','9' }; 
 
 // main func
 int main() {
@@ -118,66 +119,74 @@ void Menu() {
 		ClearCin();
 		char charInput{};
 
+		//if string inputted is over 1 -> invalid answer
 		if (input.size() > 1) {
 			charInput = {};
 		}
-		else {
+		else { // convert first element of string to char
 			charInput = input[0];
 		}
 
-		switch (charInput)
+		switch (charInput) // switchCase for which gamemode to enter 
 		{
-		case'1':
+		case'1': // duos
 			AIisOn = false;
 			MainGameLoop(AIisOn);
 			break;
-		case '2':
+			
+		case '2': // vs AI
 			AIisOn = true;
 			MainGameLoop(AIisOn);
 			break;
-		case 'q':
+
+		case 'q': // exit
 			exit(3);
 			break;
-		default:
+
+		default: // else do nothing
 			break;
 		}
 	}
 }
 
 void MainGameLoop(bool a_AIisOn) {
-
+	//the gameboard to be used thorughout the game
 	std::vector<char> board(9);
 
+	// active player, this displays the active player, switches between 'X' and 'O'
 	char activePlayer = 'X';
 
+	// a bool for the AI, if true -> AI can have a garanteed win path, if false -> draw/tie path
 	bool winCase = false;
 
-	system("cls");
+	system("cls"); // clears the board of the menu text
 	activePlayer = 'X';	// Defualts to X as first player
-	ResetBoard(board);
+	ResetBoard(board); // resets board to { 1,2,3,4, ... }
 
 	int totalTurns{};	//Counter for how many turns the has taken
-	int rotateAmount{};
+	int rotateAmount{}; // How manye 90 degree of the board is needed for the AI to interperit it
 	
-	while (true) // gameplay loop, runs until break is called
+	while (true) // gameplay loop, runs until break is called/run
 	{
 		system("cls");
 		DrawBoard(board);
-		std::cout << activePlayer << "'s turn : ";
+		std::cout << activePlayer << "'s turn : "; // displayes active players turn
 
 		int input{};
 
+		//Player input or AI input
 		if (a_AIisOn && activePlayer == 'X') {
 			//	AI input and logic
 			
 			//when we are at the third turn (total turns starts at 0) check how many roations of the board are needed
 			//for the ai to understand the board correctly
+			//saves this in rotate amount for later use
 
 			if (totalTurns == 2){
 				rotateAmount = HowManyRotations(board, winCase);
 			}
 
-			//defines ans rotates the board
+			//defines and rotates the rotateboard
 			std::vector<char> rotatedBoard = board;
 			for (int i = 0; i < rotateAmount; i++) 
 			{
@@ -197,7 +206,6 @@ void MainGameLoop(bool a_AIisOn) {
 			input = PlayerInput(board, activePlayer);
 		}
 
-
 		//succsesfull input logic
 		board[input - 1] = activePlayer;	
 		
@@ -207,11 +215,12 @@ void MainGameLoop(bool a_AIisOn) {
 			DrawBoard(board);
 			std::cout << "Player " << activePlayer << " has won!" << std::endl;
 			system("pause");
-			break;
+			break; // break the game loop and return to menu
 		}
 		
 		//add one to the total turns each turn
 		totalTurns++;
+
 		//if 9 turns is taken, and nobody with this round, its always a draw
 		if (totalTurns == 9)
 		{
@@ -219,7 +228,7 @@ void MainGameLoop(bool a_AIisOn) {
 			DrawBoard(board);
 			std::cout << "It's a draw!" << std::endl;
 			system("pause");
-			break;
+			break; // break the game loop and return to menu
 		}
 
 		//Switches the active player at the end of turn
@@ -228,10 +237,9 @@ void MainGameLoop(bool a_AIisOn) {
 }
 
 std::vector<char> RotateBoard90Deg(std::vector<char> a_board) {
-	
-	//Rotates the board 90 degres
-	//edges
+	//Hardcoded way to rotate board 90 degres
 
+	//edges
 	int edge_buffer = a_board[1];
 	a_board[1] = a_board[5];
 	a_board[5] = a_board[7];
@@ -245,44 +253,39 @@ std::vector<char> RotateBoard90Deg(std::vector<char> a_board) {
 	a_board[8] = a_board[6];
 	a_board[6] = cornerbuffer;
 
-	return a_board;
+	return a_board; //returns rotated board
 }
 
 void DrawBoard(std::vector<char> a_board) {
 	//Draws the board
-	for (int i = 0; i < 3; i++)
+
+	for (int i = 0; i < 3; i++) // goes though each collum (outside vector)
 	{
 		std::cout << ' ';
-		for (int j = 0; j < 3; j++)
+		for (int j = 0; j < 3; j++) // goes though each item in collum (inner vector)
 		{
-			std::cout << a_board[(2 - i) * 3 + j];
-			if (j < 2)
-			{
+			std::cout << a_board[(2 - i) * 3 + j]; // draws the bort from the last collum element and downwards (so it matches the numpad)
+			if (j < 2) {
 				std::cout << " | ";
 			}
 		}
-		if (i < 2)
-		{
+		if (i < 2) {
 			std::cout << std::endl << "---|---|---" << std::endl;
-
 		}
-
 	}
 
-	std::cout << std::endl << std::endl;
+	std::cout << std::endl << std::endl; // two endline to ensure space to next text in console
 }
 
 void SwitchActivePlayer(char& a_activePlayer) {
-	if (a_activePlayer == 'X')
-	{
+	//switches between 'X' and 'O' for each call of this function
+	if (a_activePlayer == 'X') {
 		a_activePlayer = 'O';
 	}
-	else if (a_activePlayer == 'O')
-	{
+	else if (a_activePlayer == 'O') {
 		a_activePlayer = 'X';
 	}
-	else
-	{
+	else {
 		std::cout << "INVALID ACTIVE PLAYER, defualting to 'X' as active player" << std::endl;
 		a_activePlayer = 'X';
 		system("pause");
@@ -294,14 +297,14 @@ int PlayerInput(std::vector<char> a_board, char a_activePlayer) {
 	// checking that the answer is inside the array/board length
 	int input{};
 	bool acceptedAns = false;
-	while (!acceptedAns)
+	while (!acceptedAns) // loop incase invalid answer, then ask again
 	{
-		std::cin >> input;
+		std::cin >> input; // actual playerinput
 		ClearCin();
 
 		acceptedAns = true;
-		if (input >= 1 && input <= 9) {
-			if (a_board[input - 1] == 'X' || a_board[input - 1] == 'O') {
+		if (input >= 1 && input <= 9) { // is input is in range
+			if (a_board[input - 1] == 'X' || a_board[input - 1] == 'O') { // if input is invalid, on an 'X' or 'O'
 				system("cls");
 				DrawBoard(a_board);
 				std::cout << "Space alleready taken, please try again" << std::endl;
@@ -309,7 +312,7 @@ int PlayerInput(std::vector<char> a_board, char a_activePlayer) {
 				acceptedAns = false;
 			}
 		}
-		else {
+		else { // If input is valid, over 9 or under 1
 			system("cls");
 			DrawBoard(a_board);
 			std::cout << "Invalid answer, please input again: " << std::endl;
@@ -322,6 +325,7 @@ int PlayerInput(std::vector<char> a_board, char a_activePlayer) {
 }
 
 void ResetBoard(std::vector<char>& a_board) {
+	//forloop for copying the global boardblueprint to inputted board
 	for (int i = 0; i < a_board.size(); i++)
 	{
 		a_board[i] = boardBlueprint[i];
@@ -330,9 +334,12 @@ void ResetBoard(std::vector<char>& a_board) {
 
 bool WinCheck(std::vector<char> a_board) {
 	// cheking the rows
-
 	for (int i = 0; i < 3; i++)
 	{
+		//Cheks if each element in one row matches eachother
+		// the i*3 gives the correct row.
+		//example if i = 1, i*3 is 3, which is the first element on row 2,
+		//then add 0, 1, 2 to get the next elements int that row
 		if (a_board[i * 3 + 0] == a_board[i * 3 + 1] && a_board[i * 3 + 1] == a_board[i * 3 + 2]) {
 			return true;
 		}
@@ -341,12 +348,17 @@ bool WinCheck(std::vector<char> a_board) {
 	//checking the collums
 	for (int i = 0; i < 3; i++)
 	{
+		//Checks if each element in one collum matches eachother
+		//the i gives the correct collum
+		//example i = 1, i + 0 is 1, i + 3 is 4 whitch is the item above the previous one
 		if (a_board[0 + i] == a_board[3 + i] && a_board[3 + i] == a_board[6 + i]){
 			return true;
 		}
 	}
 
 	//checking the / diagonal
+
+	//checks each element in each diagonal if it matches eachother
 	if (a_board[0] == a_board[4] && a_board[4] == a_board[8]){
 		return true;
 	}
@@ -355,9 +367,7 @@ bool WinCheck(std::vector<char> a_board) {
 		return true;
 	}
 
-
 	return false;
-
 }
 
 void ClearCin() {
@@ -370,10 +380,9 @@ int AIInput(std::vector<char> a_board, int turn, bool winCase) {
 		return 5;
 	}
 
-	//corner route
+	//AI input when the current path (wincase) is garranteed win
 	if (winCase)
 	{
-
 		switch (turn)
 		{
 		case 2:
@@ -381,10 +390,10 @@ int AIInput(std::vector<char> a_board, int turn, bool winCase) {
 			break;
 
 		case 4: 
-			if (a_board[0] == 'O'){
+			if (a_board[0] == 'O'){ // if 'O' inputted optimaly
 				return 3;
 			}
-			else{
+			else{ // if 'O' didn't input optimally, this results in a win
 				return 1;
 			}
 			break;
@@ -401,7 +410,7 @@ int AIInput(std::vector<char> a_board, int turn, bool winCase) {
 			break;
 		}
 	}
-	else
+	else //AI input when the current path (wincase) is tie/draw
 	{
 		switch (turn)
 		{
@@ -431,8 +440,7 @@ int AIInput(std::vector<char> a_board, int turn, bool winCase) {
 			if (a_board[7] == 'O') {
 				return 9;
 			}
-			else
-			{
+			else{
 				return 8;
 			}
 			break;
@@ -448,6 +456,7 @@ int ConvertInputFromRotation(int rotIntput, int a_rotateAmount) {
 
 	//creates a new defualt board and rotates it so it matches the AI's veiw
 	std::vector<char> coverntBoard = boardBlueprint;
+
 	for (int i = 0; i < a_rotateAmount; i++)
 	{
 		coverntBoard = RotateBoard90Deg(coverntBoard);
@@ -475,7 +484,7 @@ int ConvertInputFromRotation(int rotIntput, int a_rotateAmount) {
 }
 
 int HowManyRotations(std::vector<char> a_board, bool& a_winCase){
-	//Checking corner
+	//checking all corners for where O places and return acording info -> how many rotations and wincase
 	int rotAmount{};
 	if (a_board[6] == 'O') {
 		rotAmount = 3;
@@ -494,7 +503,7 @@ int HowManyRotations(std::vector<char> a_board, bool& a_winCase){
 		a_winCase = false;
 	}
 
-	//checking edges
+	//checking all edges for where O places and return acording info -> how many rotations and wincase
 	if (a_board[3] == 'O') {
 		rotAmount = 3;
 		a_winCase = true;
